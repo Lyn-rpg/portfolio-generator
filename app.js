@@ -7,13 +7,31 @@ return inquirer.prompt([
     {
       type: 'input',
       name: 'name',
-      message: 'What is your name?'
+      message: 'What is your name? (Required)',
+      // validate input and return string if empty value is entered
+      validate: nameInput => {
+          if (nameInput) {
+              return true;
+          } else {
+              console.log('Please enter your name!');
+              return false;
+          }
+      }
     },
 
     {
         type: 'input',
         name: 'github',
-        message: 'What is your Github Username'
+        message: 'What is your Github Username (Required)',
+        //validate input
+        validate: gitInput => {
+            if (gitInput) {
+                return true;
+            } else {
+                console.log('Please enter your github username');
+                return false;
+            }
+        }
       },
 
       {
@@ -39,12 +57,28 @@ return inquirer.prompt([
       {
         type: 'input',
         name: 'name',
-        message: 'What is the name of your project?'
+        message: 'What is the name of your project? (Required)',
+       validate: projectName => {
+           if (projectName) {
+               return true;
+           } else {
+               console.log('Please enter your project name!');
+               return false;
+           }
+       }
       },
       {
         type: 'input',
         name: 'description',
-        message: 'Provide a description of the project (Required)'
+        message: 'Provide a description of the project (Required)',
+        validate: projectDesc => {
+            if (projectDesc) {
+                return true;
+            } else {
+                console.log('Please enter a description of your project');
+                return false;
+            }
+        }
       },
       {
         type: 'checkbox',
@@ -55,7 +89,15 @@ return inquirer.prompt([
       {
         type: 'input',
         name: 'link',
-        message: 'Enter the GitHub link to your project. (Required)'
+        message: 'Enter the GitHub link to your project. (Required)',
+        validate: gitLink => {
+            if (gitLink) {
+                return true;
+            } else {
+                console.log('Please link your github project!');
+                return false;
+            }
+        }
       },
       {
         type: 'confirm',
