@@ -33,11 +33,26 @@ return inquirer.prompt([
             }
         }
       },
+         // check if user wants to include about section
+      {
+          type: 'confirm',
+          name: 'confirmAbout',
+          message: 'Would you like to enter some information about yourself for an "About" section?',
+          default: true
+      },
 
       {
         type: 'input',
         name: 'about',
-        message: 'Provide some information about yourself:'
+        message: 'Provide some information about yourself:',
+        // about section begins once user confirms (confirmAbout) section
+        when: ({ confirmAbout }) => {
+            if (confirmAbout) {
+                return true;
+            } else {
+                return false
+            }
+        }
       }
   ])
 };
