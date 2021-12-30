@@ -1,6 +1,11 @@
-// must have when generating new files
+const {writeFile, copyFile} = require('./utils/generate-site.js');
 // inquire function
 const inquirer = require('inquirer');
+
+// must have when generating new files
+const generatePage = require('./src/page-template');
+
+
 //new function to prompt user to answer questions + console log answers
 const promptUser = () => {
 return inquirer.prompt([
@@ -46,28 +51,24 @@ return inquirer.prompt([
         name: 'about',
         message: 'Provide some information about yourself:',
         // about section begins once user confirms (confirmAbout) section
-        when: ({ confirmAbout }) => {
-            if (confirmAbout) {
-                return true;
-            } else {
-                return false
-            }
-        }
+        when: ({ confirmAbout }) => confirmAbout 
       }
-  ])
+            
+  ]);
 };
   
 // new function for starting a new project
   const promptProject =  (portfolioData) => {
-     // If there's no 'projects' array property, create one
-     if (!portfolioData.projects) {
-        portfolioData.projects = [];
-        }
     console.log(`
   =================
   Add a New Project
   =================
   `);
+
+  // If there's no 'projects' array property, create one
+  if (!portfolioData.projects) {
+    portfolioData.projects = [];
+    }
     return inquirer.prompt([
       {
         type: 'input',
@@ -90,7 +91,7 @@ return inquirer.prompt([
             if (projectDesc) {
                 return true;
             } else {
-                console.log('Please enter a description of your project');
+                console.log('Please enter a project description');
                 return false;
             }
         }
@@ -127,35 +128,37 @@ return inquirer.prompt([
         default: false
       }
     ])
-}
-// chain together promptuser function and prompt project function + console log all answers
-
-promptUser()
-  .then(promptProject)
-  .then(projectAnswers => console.log(projectAnswers))
-  .then(projectData => {
-      console.log(portfolioData);
-      // confirm if user wants to add a project. if true, then function is called 
-      if (projectData.confirmAddProject) {
+    .then(projectData => {
+        portfolioData.projects.push(projectData);
+        if (projectData.confirmAddProject) {
           return promptProject(portfolioData);
-          //otherwise portfolioData object is returned
-      } else {
+        } else {
           return portfolioData;
-      }
-  });
-
-//const fs = require('fs');
-
-//const generatePage = require('./src/page-template.js');
-
-//const pageHTML = generatePage(name, github);
-
-
-
-// actually writing the new file and checking if there are errors or if written successfully
-//fs.writeFile('./index.html',pageHTML, err => {
-    //if (err) throw new Error(err);
-   // console.log('Portfolio complete! Checkout index.html to see the output!');
-//});
-
-
+        }
+      });
+};
+//begin promptUser function to ask qustions
+promptUser()
+//take data and turn it into its own project
+.then(promptProject)
+//that data is taken and generates a page full of user data
+.then(portfolioData => {
+    return generatePage(portfolioData);
+})
+//page if user data is organized on an html page
+.then(pageHTML => {
+    return writeFile(pageHTML);
+})
+//write the new files html and css and return a copy
+.then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+})
+//return the new copy of the file
+.then(copyFileResponse => {
+    console.log(copyFileResponse);
+})
+//catch and log any error so we know where things went wrong
+.catch(err => {
+    console.log(err);
+});
